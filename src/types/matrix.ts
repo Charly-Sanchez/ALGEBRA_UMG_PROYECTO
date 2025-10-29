@@ -27,6 +27,16 @@ export interface Solution {
   hasNoSolution: boolean;
 }
 
+export interface InverseResult {
+  inverseMatrix: Matrix;
+  fractionInverseMatrix?: FractionMatrix;
+  determinant: number;
+  fractionDeterminant?: Fraction;
+  isInvertible: boolean;
+  adjugateMatrix: Matrix;
+  fractionAdjugateMatrix?: FractionMatrix;
+}
+
 export type CalculationMethod = 'laplace' | 'gauss-jordan';
 
 export interface CalculatorState {

@@ -1,18 +1,19 @@
 import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Calculator, Shuffle, RotateCcw, Play, Hash, BookOpen } from 'lucide-react';
+import { Calculator, Shuffle, RotateCcw, Play, BookOpen } from 'lucide-react';
 import './App.css';
 
 import { MatrixInput } from './components/MatrixInput';
 import { StepsVisualizer } from './components/StepsVisualizer';
 
-import type { Matrix, Vector, CalculationStep, CalculationMethod, Solution } from './types/matrix';
+import type { Matrix, Vector, CalculationStep, CalculationMethod, Solution, InverseResult } from './types/matrix';
 import { LaplaceExpansion } from './utils/laplaceExpansion';
 import { GaussJordanDeterminant } from './utils/gaussJordanDeterminant';
 import { GaussJordanFractions } from './utils/gaussJordanFractions';
+import { MatrixInverse } from './utils/matrixInverse';
 import { Fraction } from './utils/fraction';
 
-type CalculationMode = 'determinant' | 'system';
+type CalculationMode = 'determinant' | 'system' | 'inverse';
 
 function App() {
   const [size, setSize] = useState<number>(3);
@@ -25,6 +26,7 @@ function App() {
   const [steps, setSteps] = useState<CalculationStep[]>([]);
   const [determinant, setDeterminant] = useState<Fraction | null>(null);
   const [solution, setSolution] = useState<Solution | null>(null);
+  const [inverseResult, setInverseResult] = useState<InverseResult | null>(null);
   const [expansionFormula, setExpansionFormula] = useState<string | undefined>(undefined);
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -52,6 +54,7 @@ function App() {
     setSteps([]);
     setDeterminant(null);
     setSolution(null);
+    setInverseResult(null);
     setExpansionFormula(undefined);
   }, [matrix, constants]);
 
@@ -78,6 +81,7 @@ function App() {
     setSteps([]);
     setDeterminant(null);
     setSolution(null);
+    setInverseResult(null);
     setExpansionFormula(undefined);
   }, [size]);
 
@@ -88,6 +92,7 @@ function App() {
     setSteps([]);
     setDeterminant(null);
     setSolution(null);
+    setInverseResult(null);
     setExpansionFormula(undefined);
   }, [size]);
 
@@ -110,6 +115,7 @@ function App() {
           setDeterminant(new Fraction(laplaceResult.determinant));
           setExpansionFormula(laplaceResult.expansionFormula);
           setSolution(null);
+          setInverseResult(null);
         } else {
           // Para Gauss-Jordan, crear el método optimizado para determinantes
           result = GaussJordanDeterminant.calculateDeterminant(matrix);
@@ -117,14 +123,16 @@ function App() {
           setDeterminant(result.determinant);
           setExpansionFormula(undefined);
           setSolution(null);
+          setInverseResult(null);
         }
-      } else {
+      } else if (mode === 'system') {
         // Modo: Resolver sistema de ecuaciones
         if (method === 'gauss-jordan') {
           const result = GaussJordanFractions.solve(matrix, constants);
           setSteps(result.steps);
           setSolution(result.solution);
           setDeterminant(null);
+          setInverseResult(null);
           setExpansionFormula(undefined);
         } else {
           // Para LaPlace, mostrar mensaje de que solo Gauss-Jordan soporta sistemas
@@ -137,20 +145,36 @@ function App() {
           }]);
           setDeterminant(null);
           setSolution(null);
+          setInverseResult(null);
         }
+      } else {
+        // Modo: Calcular matriz inversa
+        const result = MatrixInverse.calculateInverse(matrix);
+        setSteps(result.steps);
+        setInverseResult(result.result);
+        setDeterminant(null);
+        setSolution(null);
+        setExpansionFormula(undefined);
       }
     } catch (error) {
       console.error('Error al calcular:', error);
       // Manejar error
+      const errorMessage = mode === 'determinant' 
+        ? 'calcular el determinante' 
+        : mode === 'system' 
+        ? 'resolver el sistema' 
+        : 'calcular la matriz inversa';
+      
       setSteps([{
         id: 1,
         title: 'Error',
-        description: `Ocurrió un error al ${mode === 'determinant' ? 'calcular el determinante' : 'resolver el sistema'}. Verifica que los datos sean válidos.`,
+        description: `Ocurrió un error al ${errorMessage}. Verifica que los datos sean válidos.`,
         matrix: matrix,
         operation: 'Error'
       }]);
       setDeterminant(null);
       setSolution(null);
+      setInverseResult(null);
     } finally {
       setIsCalculating(false);
     }
@@ -166,7 +190,7 @@ function App() {
           </div>
           
           <div className="header-controls">
-            {/* Selector de modo: Determinante o Sistema de Ecuaciones */}
+            {/* Selector de modo: Determinante, Sistema de Ecuaciones o Matriz Inversa */}
             <nav className="nav-buttons">
               <button
                 className={`nav-button ${mode === 'determinant' ? 'active' : ''}`}
@@ -182,6 +206,15 @@ function App() {
                 }}
               >
                 Sistema de Ecuaciones
+              </button>
+              <button
+                className={`nav-button ${mode === 'inverse' ? 'active' : ''}`}
+                onClick={() => {
+                  setMode('inverse');
+                  setMethod('laplace'); // LaPlace por defecto para matriz inversa
+                }}
+              >
+                Matriz Inversa
               </button>
             </nav>
             
@@ -199,17 +232,11 @@ function App() {
                 onClick={() => setMethod('laplace')}
                 disabled={mode === 'system'} // En modo sistema, solo Gauss-Jordan
               >
-                LaPlace / Cramer
+                {mode === 'inverse' ? 'LaPlace (Adjunta)' : 'LaPlace / Cramer'}
               </button>
             </nav>
             
-            <button
-              className="fraction-toggle active"
-              title="Se muestran fracciones exactas para mayor precisión"
-            >
-              <Hash size={18} />
-              Fracciones
-            </button>
+
           </div>
         </div>
       </header>
@@ -227,14 +254,18 @@ function App() {
                 ? (method === 'gauss-jordan'
                     ? 'Cálculo de Determinante por Gauss-Jordan'
                     : 'Cálculo de Determinante por Expansión de LaPlace')
-                : 'Resolución de Sistema de Ecuaciones por Gauss-Jordan'}
+                : mode === 'system'
+                ? 'Resolución de Sistema de Ecuaciones por Gauss-Jordan'
+                : 'Cálculo de Matriz Inversa por LaPlace'}
             </h2>
             <p className="calculator-subtitle">
               {mode === 'determinant'
                 ? (method === 'gauss-jordan'
                     ? 'Calcula el determinante usando eliminación gaussiana optimizada'
                     : 'Usa expansión por cofactores, seleccionando automáticamente la fila/columna con más ceros')
-                : 'Resuelve el sistema de ecuaciones Ax = b usando el método de Gauss-Jordan con eliminación hacia adelante y atrás'}
+                : mode === 'system'
+                ? 'Resuelve el sistema de ecuaciones Ax = b usando el método de Gauss-Jordan con eliminación hacia adelante y atrás'
+                : 'Calcula la matriz inversa A⁻¹ = (1/det(A)) × adj(A) usando determinante y matriz adjunta'}
             </p>
           </div>
 
@@ -306,7 +337,11 @@ function App() {
               ) : (
                 <>
                   <Play size={20} />
-                  {mode === 'determinant' ? 'Calcular Determinante' : 'Resolver Sistema'}
+                  {mode === 'determinant' 
+                    ? 'Calcular Determinante' 
+                    : mode === 'system' 
+                    ? 'Resolver Sistema' 
+                    : 'Calcular Matriz Inversa'}
                 </>
               )}
             </button>
@@ -340,9 +375,12 @@ function App() {
             steps={steps}
             determinant={determinant}
             solution={solution}
+            inverseResult={inverseResult}
             method={method}
             mode={mode}
+            showFractions={true}
             originalMatrix={matrix}
+            originalConstants={constants}
             expansionFormula={expansionFormula}
           />
         )}

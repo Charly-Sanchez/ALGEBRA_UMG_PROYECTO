@@ -30,7 +30,7 @@ export const SolutionVerification: React.FC<SolutionVerificationProps> = ({
     rightSideFraction?: Fraction;
   }[]>([]);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [showFractions, setShowFractions] = useState(false);
+  const showFractions = true;
 
   const startVerification = () => {
     if (!solution.isUnique || solution.variables.length === 0) return;
@@ -99,7 +99,8 @@ export const SolutionVerification: React.FC<SolutionVerificationProps> = ({
   }, [currentEquation, originalMatrix, originalConstants, solution, animationSpeed, isVerifying]);
 
   const formatNumber = (num: number): string => {
-    return Math.abs(num) < 1e-10 ? '0' : num.toFixed(6).replace(/\.?0+$/, '');
+    const fraction = Fraction.fromDecimal(num);
+    return fraction.toString();
   };
 
   const renderEquation = (equationIndex: number, result?: any) => {
@@ -202,14 +203,6 @@ export const SolutionVerification: React.FC<SolutionVerificationProps> = ({
         </h3>
         
         <div className="verification-controls">
-          <button
-            className={`fraction-toggle ${showFractions ? 'active' : ''}`}
-            onClick={() => setShowFractions(!showFractions)}
-          >
-            {showFractions ? '123' : '½'}
-            {showFractions ? ' Decimales' : ' Fracciones'}
-          </button>
-          
           <button
             className="verification-restart"
             onClick={startVerification}

@@ -1,20 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, Calculator, ArrowRight } from 'lucide-react';
-import type { CalculationStep, Solution } from '../types/matrix';
+import type { CalculationStep, Solution, Matrix, Vector, InverseResult } from '../types/matrix';
 import { MatrixMath } from '../utils/matrixMath';
 import { MatrixFractionDisplay } from './FractionDisplay';
 import { AnimationControls } from './AnimationControls';
+import { SolutionVerification } from './SolutionVerification';
+import { Fraction } from '../utils/fraction';
 
 interface StepsVisualizerProps {
   steps: CalculationStep[];
   determinant: any;
   solution?: Solution | null;
+  inverseResult?: InverseResult | null;
   method: 'gauss-jordan' | 'laplace';
-  mode?: 'determinant' | 'system';
+  mode?: 'determinant' | 'system' | 'inverse';
   showFractions?: boolean;
   className?: string;
   originalMatrix?: number[][];
+  originalConstants?: Vector;
   expansionFormula?: string;
 }
 
@@ -22,11 +26,13 @@ export const StepsVisualizer: React.FC<StepsVisualizerProps> = ({
   steps,
   determinant,
   solution,
+  inverseResult,
   method,
   mode = 'determinant',
-  showFractions = false,
+  showFractions = true,
   className = '',
   originalMatrix = [],
+  originalConstants = [],
   expansionFormula
 }) => {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set([1]));
@@ -101,6 +107,9 @@ export const StepsVisualizer: React.FC<StepsVisualizerProps> = ({
       case 'gauss-jordan':
         return 'Método de Gauss-Jordan';
       case 'laplace':
+        if (mode === 'inverse') {
+          return 'Cálculo de Matriz Inversa por LaPlace';
+        }
         return 'Expansión de LaPlace / Regla de Cramer';
       default:
         return 'Resolución Paso a Paso';
@@ -246,7 +255,33 @@ export const StepsVisualizer: React.FC<StepsVisualizerProps> = ({
       )}
 
       {solution && mode === 'system' && (
-        <SolutionDisplay solution={solution} />
+        <>
+          <SolutionDisplay solution={solution} />
+          
+          {/* Sección de Comprobación para Gauss-Jordan */}
+          {method === 'gauss-jordan' && solution.isUnique && originalMatrix.length > 0 && originalConstants.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <SolutionVerification
+                originalMatrix={originalMatrix}
+                originalConstants={originalConstants}
+                solution={solution}
+                animationSpeed={1500}
+                autoStart={true}
+              />
+            </motion.div>
+          )}
+        </>
+      )}
+
+      {inverseResult && mode === 'inverse' && (
+        <InverseResultDisplay 
+          inverseResult={inverseResult} 
+          originalMatrix={originalMatrix}
+        />
       )}
     </motion.div>
   );
@@ -300,7 +335,11 @@ const MatrixDisplay: React.FC<{
       <div className="matrix-bracket right-bracket">]</div>
       {hasExclusions && (
         <div className="exclusion-note">
-          ↓ Fila {excludedRow !== undefined ? excludedRow + 1 : ''} y Columna {excludedCol !== undefined ? excludedCol + 1 : ''} eliminadas
+          🚫 Se eliminan: 
+          {excludedRow !== undefined && ` Fila ${excludedRow + 1}`}
+          {excludedRow !== undefined && excludedCol !== undefined && ' y'}
+          {excludedCol !== undefined && ` Columna ${excludedCol + 1}`}
+          {' para calcular el menor M₍' + (excludedRow !== undefined ? excludedRow + 1 : '') + ',' +  (excludedCol !== undefined ? excludedCol + 1 : '') + '₎'}
         </div>
       )}
     </div>
@@ -515,22 +554,409 @@ const SolutionDisplay: React.FC<{ solution: Solution }> = ({ solution }) => {
               <span className="equals">=</span>
               <span className="variable-value">
                 {fraction.toString()}
-                {!fraction.isInteger() && (
-                  <span className="variable-decimal"> ≈ {fraction.toDecimal().toFixed(4)}</span>
-                )}
               </span>
             </div>
           ))
         ) : (
-          solution.variables.map((value, i) => (
-            <div key={i} className="variable-item">
-              <span className="variable-name">x<sub>{i + 1}</sub></span>
-              <span className="equals">=</span>
-              <span className="variable-value">{value.toFixed(4)}</span>
-            </div>
-          ))
+          solution.variables.map((value, i) => {
+            const fraction = Fraction.fromDecimal(value);
+            return (
+              <div key={i} className="variable-item">
+                <span className="variable-name">x<sub>{i + 1}</sub></span>
+                <span className="equals">=</span>
+                <span className="variable-value">{fraction.toString()}</span>
+              </div>
+            );
+          })
         )}
       </div>
+    </motion.div>
+  );
+};
+
+// Componente para mostrar la verificación de multiplicación paso a paso (versión simplificada)
+const MatrixMultiplicationVerification: React.FC<{
+  originalMatrix: Matrix;
+  inverseMatrix: Matrix;
+  fractionInverseMatrix?: any[];
+}> = ({ originalMatrix, inverseMatrix, fractionInverseMatrix }) => {
+  const [currentStep, setCurrentStep] = useState(-1);
+  const n = originalMatrix.length;
+  
+  // Calcular matriz resultado
+  const resultMatrix: Matrix = [];
+  for (let i = 0; i < n; i++) {
+    resultMatrix[i] = [];
+    for (let j = 0; j < n; j++) {
+      let sum = 0;
+      for (let k = 0; k < n; k++) {
+        sum += originalMatrix[i][k] * inverseMatrix[k][j];
+      }
+      resultMatrix[i][j] = sum;
+    }
+  }
+  
+  const totalSteps = n * n;
+  const currentRow = currentStep >= 0 ? Math.floor(currentStep / n) : -1;
+  const currentCol = currentStep >= 0 ? currentStep % n : -1;
+  
+  const isIdentity = resultMatrix.every((row, i) => 
+    row.every((val, j) => {
+      const expected = i === j ? 1 : 0;
+      return Math.abs(val - expected) < 1e-10;
+    })
+  );
+
+  const startVerification = () => setCurrentStep(0);
+  const nextStep = () => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+  const prevStep = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+  const reset = () => setCurrentStep(-1);
+
+  return (
+    <div className="verification-section">
+      <h4 className="verification-title">🔍 Verificación: A × A⁻¹ = I</h4>
+      <p className="verification-description">
+        Para verificar que A⁻¹ es correcta, multiplicamos A × A⁻¹ y debe dar la matriz identidad I:
+      </p>
+      
+      {/* Controles */}
+      <div className="verification-controls">
+        <button 
+          className="step-button primary"
+          onClick={startVerification}
+          disabled={currentStep >= 0}
+        >
+          ▶️ Iniciar Verificación
+        </button>
+        <button 
+          className="step-button"
+          onClick={prevStep}
+          disabled={currentStep <= 0}
+        >
+          ⬅️ Anterior
+        </button>
+        <button 
+          className="step-button"
+          onClick={nextStep}
+          disabled={currentStep >= totalSteps - 1}
+        >
+          ➡️ Siguiente
+        </button>
+        <button 
+          className="step-button"
+          onClick={reset}
+        >
+          🔄 Reiniciar
+        </button>
+      </div>
+
+      {/* Vista de matrices con elementos destacados */}
+      <div className="matrix-verification-display">
+        <div className="matrix-container">
+          <div className="matrix-label">A</div>
+          <div className="matrix-with-highlight">
+            {originalMatrix.map((row, i) => (
+              <div key={i} className="matrix-row">
+                {row.map((val, j) => (
+                  <div 
+                    key={j} 
+                    className={`matrix-cell ${
+                      currentStep >= 0 && i === currentRow ? 'highlighted-row' : ''
+                    }`}
+                  >
+                    {Fraction.fromDecimal(val).toString()}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="multiplication-symbol">×</div>
+
+        <div className="matrix-container">
+          <div className="matrix-label">A⁻¹</div>
+          <div className="matrix-with-highlight">
+            {(fractionInverseMatrix || inverseMatrix).map((row: any, i: number) => (
+              <div key={i} className="matrix-row">
+                {(Array.isArray(row) ? row : inverseMatrix[i]).map((val: any, j: number) => (
+                  <div 
+                    key={j} 
+                    className={`matrix-cell ${
+                      currentStep >= 0 && j === currentCol ? 'highlighted-col' : ''
+                    }`}
+                  >
+                    {fractionInverseMatrix 
+                      ? (val && val.toString ? val.toString() : val)
+                      : Fraction.fromDecimal(inverseMatrix[i][j]).toString()
+                    }
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="multiplication-symbol">=</div>
+
+        <div className="matrix-container">
+          <div className="matrix-label">Resultado</div>
+          <div className="matrix-with-highlight">
+            {resultMatrix.map((row, i) => (
+              <div key={i} className="matrix-row">
+                {row.map((val, j) => {
+                  const isCurrentElement = currentStep >= 0 && i === currentRow && j === currentCol;
+                  const isCalculated = currentStep >= 0 && (i * n + j) <= currentStep;
+                  const isIdentityCorrect = (i === j && Math.abs(val - 1) < 1e-10) || (i !== j && Math.abs(val) < 1e-10);
+                  
+                  return (
+                    <div 
+                      key={j} 
+                      className={`matrix-cell ${
+                        isCurrentElement ? 'current-element' : 
+                        isCalculated ? (isIdentityCorrect ? 'correct-element' : 'incorrect-element') : 
+                        'pending-element'
+                      }`}
+                    >
+                      {isCalculated ? Fraction.fromDecimal(val).toString() : '?'}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Explicación del paso actual */}
+      {currentStep >= 0 && (
+        <motion.div 
+          className="step-explanation"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="step-info">
+            <h5>Elemento [{currentRow + 1}, {currentCol + 1}] = Fila {currentRow + 1} × Columna {currentCol + 1}</h5>
+          </div>
+          
+          <div className="multiplication-sequence">
+            {/* Línea de operaciones */}
+            <div className="operations-line">
+              {originalMatrix[currentRow].map((aVal, k) => {
+                const bVal = fractionInverseMatrix 
+                  ? fractionInverseMatrix[k][currentCol]
+                  : inverseMatrix[k][currentCol];
+                
+                return (
+                  <span key={k} className="operation-term">
+                    <span className="value-a">{Fraction.fromDecimal(aVal).toString()}</span>
+                    <span className="multiply-symbol">×</span>
+                    <span className="value-b">
+                      {fractionInverseMatrix 
+                        ? (bVal?.toString() || Fraction.fromDecimal(inverseMatrix[k][currentCol]).toString())
+                        : Fraction.fromDecimal(bVal).toString()
+                      }
+                    </span>
+                    {k < originalMatrix[currentRow].length - 1 && <span className="addition-symbol">+</span>}
+                  </span>
+                );
+              })}
+            </div>
+            
+            {/* Línea de resultados de cada multiplicación */}
+            <div className="results-line">
+              {originalMatrix[currentRow].map((aVal, k) => {
+                const bVal = fractionInverseMatrix 
+                  ? fractionInverseMatrix[k][currentCol]
+                  : inverseMatrix[k][currentCol];
+                
+                // Corrección: multiplicar fracciones correctamente
+                let product;
+                if (fractionInverseMatrix && bVal && typeof bVal === 'object' && bVal.multiply) {
+                  // Si bVal es un objeto Fraction
+                  const aFraction = Fraction.fromDecimal(aVal);
+                  product = aFraction.multiply(bVal);
+                } else {
+                  // Convertir ambos a fracciones y multiplicar
+                  const aFraction = Fraction.fromDecimal(aVal);
+                  let bFraction;
+                  
+                  if (fractionInverseMatrix) {
+                    // Parsear la fracción del string (ej: "5/11" o "-1/11")
+                    const bStr = bVal?.toString() || '0';
+                    if (bStr.includes('/')) {
+                      const [num, den] = bStr.split('/');
+                      bFraction = new Fraction(parseInt(num), parseInt(den));
+                    } else {
+                      bFraction = new Fraction(parseInt(bStr), 1);
+                    }
+                  } else {
+                    bFraction = Fraction.fromDecimal(bVal);
+                  }
+                  
+                  product = aFraction.multiply(bFraction);
+                }
+                
+                return (
+                  <span key={k} className="result-term">
+                    <span className="multiplication-result">
+                      {product.toString()}
+                    </span>
+                    {k < originalMatrix[currentRow].length - 1 && <span className="plus-result">+</span>}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="final-calculation">
+            <div className="equals-line">
+              <span className="equals-symbol">=</span>
+              <span className="final-result">{Fraction.fromDecimal(resultMatrix[currentRow][currentCol]).toString()}</span>
+            </div>
+            
+            <div className="verification-status">
+              {((currentRow === currentCol && Math.abs(resultMatrix[currentRow][currentCol] - 1) < 1e-10) || 
+                (currentRow !== currentCol && Math.abs(resultMatrix[currentRow][currentCol]) < 1e-10)) ? (
+                <span className="status-correct">✅ Correcto</span>
+              ) : (
+                <span className="status-incorrect">❌ Incorrecto</span>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Resultado final */}
+      {currentStep >= totalSteps - 1 && (
+        <motion.div 
+          className="final-result"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          {isIdentity ? (
+            <div className="verification-success">
+              🎉 <strong>¡Verificación Exitosa!</strong><br/>
+              A × A⁻¹ = I (matriz identidad)
+            </div>
+          ) : (
+            <div className="verification-error">
+              ❌ <strong>Error en la verificación</strong><br/>
+              A × A⁻¹ ≠ I (no es matriz identidad)
+            </div>
+          )}
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+// Componente para mostrar el resultado de la matriz inversa
+const InverseResultDisplay: React.FC<{
+  inverseResult: InverseResult;
+  originalMatrix?: number[][];
+}> = ({ inverseResult, originalMatrix = [] }) => {
+  if (!inverseResult.isInvertible) {
+    return (
+      <motion.div
+        className="inverse-result-display error"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="inverse-header">
+          <Calculator size={28} />
+          <h3>Matriz No Invertible</h3>
+        </div>
+        <p className="inverse-message">
+          La matriz no tiene inversa porque su determinante es cero (matriz singular).
+        </p>
+        <div className="determinant-info">
+          <span className="determinant-label">det(A) = </span>
+          <span className="determinant-value zero-det">0</span>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      className="inverse-result-display"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="inverse-header">
+        <Calculator size={28} />
+        <h3>Matriz Inversa Calculada</h3>
+      </div>
+      
+      <div className="inverse-info">
+        <div className="determinant-info">
+          <span className="determinant-label">det(A) = </span>
+          <span className={`determinant-value ${Math.abs(inverseResult.determinant) < 1e-10 ? 'zero-det' : 'nonzero-det'}`}>
+            {inverseResult.fractionDeterminant ? 
+              inverseResult.fractionDeterminant.toString() : 
+              inverseResult.determinant.toString()}
+          </span>
+        </div>
+        
+        <div className="inverse-formula">
+          <span className="formula-label">Fórmula: </span>
+          <span className="formula-content">A⁻¹ = (1/det(A)) × adj(A)</span>
+        </div>
+      </div>
+
+      <div className="matrix-results">
+        <div className="matrix-result-section">
+          <h4 className="matrix-section-title">Matriz Inversa A⁻¹:</h4>
+          <div className="matrix-display-container">
+            {inverseResult.fractionInverseMatrix ? (
+              <MatrixFractionDisplay matrix={inverseResult.fractionInverseMatrix} />
+            ) : (
+              <MatrixDisplay matrix={inverseResult.inverseMatrix} />
+            )}
+          </div>
+        </div>
+        
+        <div className="matrix-result-section">
+          <h4 className="matrix-section-title">Matriz Adjunta adj(A):</h4>
+          <div className="matrix-display-container">
+            {inverseResult.fractionAdjugateMatrix ? (
+              <MatrixFractionDisplay matrix={inverseResult.fractionAdjugateMatrix} />
+            ) : (
+              <MatrixDisplay matrix={inverseResult.adjugateMatrix} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {originalMatrix.length > 0 && (
+        <>
+          <div className="matrix-summary">
+            <h4 className="matrix-summary-title">Matriz Original A ({originalMatrix.length}×{originalMatrix[0]?.length || 0}):</h4>
+            <div className="matrix-summary-content">
+              <MatrixDisplay matrix={originalMatrix} />
+            </div>
+          </div>
+          
+          <MatrixMultiplicationVerification 
+            originalMatrix={originalMatrix}
+            inverseMatrix={inverseResult.inverseMatrix}
+            fractionInverseMatrix={inverseResult.fractionInverseMatrix}
+          />
+        </>
+      )}
     </motion.div>
   );
 };
