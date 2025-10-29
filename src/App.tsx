@@ -187,6 +187,27 @@ function App() {
           <div className="logo-title">
             <Calculator className="logo-icon" />
             <h1 className="title">Calculadora de Álgebra Lineal</h1>
+            
+            <div className="documentation-buttons">
+              <a 
+                href="docs/manual-usuario.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="doc-button user-manual"
+                title="Manual de Usuario"
+              >
+                📖 Manual de Usuario
+              </a>
+              <a 
+                href="docs/documentacion-tecnica.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="doc-button tech-docs"
+                title="Documentación Técnica"
+              >
+                🔧 Docs Técnicas
+              </a>
+            </div>
           </div>
           
           <div className="header-controls">
@@ -232,7 +253,7 @@ function App() {
                 onClick={() => setMethod('laplace')}
                 disabled={mode === 'system'} // En modo sistema, solo Gauss-Jordan
               >
-                {mode === 'inverse' ? 'LaPlace (Adjunta)' : 'LaPlace / Cramer'}
+                {mode === 'inverse' ? 'LaPlace (Adjunta)' : 'LaPlace'}
               </button>
             </nav>
             

@@ -43,6 +43,52 @@
   background-clip: text;
 }
 
+/* Documentation Buttons */
+.documentation-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.doc-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.doc-button.user-manual {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border-color: rgba(79, 70, 229, 0.2);
+}
+
+.doc-button.tech-docs {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+  border-color: rgba(5, 150, 105, 0.2);
+}
+
+.doc-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.doc-button.user-manual:hover {
+  background: linear-gradient(135deg, #5b21b6 0%, #8b5cf6 100%);
+}
+
+.doc-button.tech-docs:hover {
+  background: linear-gradient(135deg, #065f46 0%, #059669 100%);
+}
+
 /* Header Controls */
 .header-controls {
   display: flex;
@@ -653,7 +699,7 @@
     width: 100%;
     justify-content: center;
   }
-}
+
 
 /* Matrix Input Styles */
 .matrix-input {

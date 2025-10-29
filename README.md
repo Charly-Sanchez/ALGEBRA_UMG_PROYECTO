@@ -271,11 +271,56 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 💡 **Tip:** Comienza con matrices pequeñas (2×2 o 3×3) para familiarizarte con la interfaz antes de probar sistemas más grandes.
 
-📚 **Recursos Educativos:** Este proyecto es ideal para complementar cursos de Álgebra Lineal y Métodos Numéricos.
+## 📚 Documentación
+
+El proyecto incluye documentación completa y profesional:
+
+### 📖 [Manual de Usuario](docs/manual-usuario.html)
+Guía completa para usuarios finales que incluye:
+- Funcionalidades principales de la aplicación
+- Guía paso a paso para cada modo de cálculo
+- Ejemplos prácticos resueltos
+- Preguntas frecuentes (FAQ)
+- Consejos de uso y mejores prácticas
+
+### 🔧 [Documentación Técnica](docs/documentacion-tecnica.html)
+Documentación para desarrolladores y colaboradores:
+- Arquitectura del sistema y principios de diseño
+- Documentación completa de componentes React
+- API reference de todas las utilidades matemáticas
+- Algoritmos implementados con complejidad computacional
+- Guía de instalación y configuración de desarrollo
+- Estructura del proyecto y convenciones de código
+
+### � Acceso a la Documentación
+
+Para ver la documentación, simplemente abre los archivos HTML en tu navegador:
+
+```bash
+# Manual de Usuario
+open docs/manual-usuario.html
+
+# Documentación Técnica
+open docs/documentacion-tecnica.html
+```
+
+O desde el directorio del proyecto:
+- **Manual de Usuario**: `./docs/manual-usuario.html`
+- **Documentación Técnica**: `./docs/documentacion-tecnica.html`
+
+La documentación incluye:
+- ✨ Diseño profesional y responsive
+- 🔍 Búsqueda integrada (solo en docs técnicas)
+- 📋 Tabla de contenidos flotante
+- 💻 Resaltado de sintaxis para código
+- 📱 Navegación adaptable para móviles
+- 🎨 Temas visuales consistentes con la aplicación
+
+�📚 **Recursos Educativos:** Este proyecto es ideal para complementar cursos de Álgebra Lineal y Métodos Numéricos.
 
 ⭐ **Si te gusta el proyecto, dale una estrella en GitHub!**
 
 ---
 
 **Universidad Mariano Gálvez de Guatemala - Facultad de Ingeniería en Sistemas**
-*Álgebra Lineal - Ciclo II 2024*
+*Álgebra Lineal - Ciclo II 2025*

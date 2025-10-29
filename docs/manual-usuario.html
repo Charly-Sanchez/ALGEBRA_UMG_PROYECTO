@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Calculadora de Álgebra Lineal UMG - Los Vectores</title>
+    <link rel="stylesheet" href="css/documentation.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-calculator"></i>
+                    <h1>Calculadora de Álgebra Lineal UMG</h1>
+                </div>
+                <nav class="nav">
+                    <a href="#inicio">Inicio</a>
+                    <a href="#funcionalidades">Funcionalidades</a>
+                    <a href="#guia-uso">Guía de Uso</a>
+                    <a href="#ejemplos">Ejemplos</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <section id="inicio" class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Manual de Usuario</h2>
+                    <p class="hero-subtitle">Carlos Armando Sánchez Rodríguez 1290-25-2060 <br> Dennis Francisco Salazár Hernandez</p>
+                    <div class="hero-features">
+                        <div class="feature">
+                            <i class="fas fa-matrix"></i>
+                            <span>Determinantes</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-equals"></i>
+                            <span>Sistemas de Ecuaciones</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-undo"></i>
+                            <span>Matrices Inversas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="funcionalidades" class="section">
+            <div class="container">
+                <h2 class="section-title">Funcionalidades Principales</h2>
+                
+                <div class="functionality-grid">
+                    <div class="functionality-card">
+                        <div class="card-header">
+                            <i class="fas fa-calculator"></i>
+                            <h3>Cálculo de Determinantes</h3>
+                        </div>
+                        <div class="card-content">
+                            <ul>
+                                <li>Matrices de 2×2 hasta n×n</li>
+                                <li>Método de expansión de Laplace</li>
+                                <li>Visualización paso a paso</li>
+                                <li>Resultados en fracciones exactas</li>
+                                <li>Animaciones educativas</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="functionality-card">
+                        <div class="card-header">
+                            <i class="fas fa-equals"></i>
+                            <h3>Sistemas de Ecuaciones</h3>
+                        </div>
+                        <div class="card-content">
+                            <ul>
+                                <li>Método de Gauss-Jordan</li>
+                                <li>Eliminación gaussiana</li>
+                                <li>Verificación de soluciones</li>
+                                <li>Detección de sistemas inconsistentes</li>
+                                <li>Formato de fracciones</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="functionality-card">
+                        <div class="card-header">
+                            <i class="fas fa-undo"></i>
+                            <h3>Matrices Inversas</h3>
+                        </div>
+                        <div class="card-content">
+                            <ul>
+                                <li>Regla de Laplace para inversas</li>
+                                <li>Cálculo de cofactores</li>
+                                <li>Matriz adjunta</li>
+                                <li>Verificación A × A⁻¹ = I</li>
+                                <li>Visualización de tachado</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guia-uso" class="section bg-alt">
+            <div class="container">
+                <h2 class="section-title">Guía de Uso</h2>
+                
+                <div class="usage-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Seleccionar Modo de Cálculo</h3>
+                            <p>Elija entre tres opciones disponibles:</p>
+                            <div class="mode-options">
+                                <div class="mode-option">
+                                    <strong>Determinante:</strong> Para calcular el determinante de una matriz
+                                </div>
+                                <div class="mode-option">
+                                    <strong>Sistema de Ecuaciones:</strong> Para resolver sistemas lineales
+                                </div>
+                                <div class="mode-option">
+                                    <strong>Matriz Inversa:</strong> Para calcular la inversa de una matriz
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Configurar Dimensiones</h3>
+                            <p>Establezca el tamaño de la matriz usando los controles de dimensión:</p>
+                            <ul>
+                                <li>Use los botones <code>+</code> y <code>-</code> para ajustar filas y columnas</li>
+                                <li>El tamaño mínimo es 2×2</li>
+                                <li>El tamaño máximo recomendado es 5×5 para mejor rendimiento</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Ingresar Datos</h3>
+                            <p>Complete la matriz con los valores deseados:</p>
+                            <div class="input-tips">
+                                <div class="tip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Puede ingresar números enteros, decimales o fracciones</span>
+                                </div>
+                                <div class="tip">
+                                    <i class="fas fa-keyboard"></i>
+                                    <span>Use Tab o Enter para navegar entre campos</span>
+                                </div>
+                                <div class="tip">
+                                    <i class="fas fa-examples"></i>
+                                    <span>Use el selector de ejemplos para datos de prueba</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Ejecutar Cálculo</h3>
+                            <p>Presione el botón de cálculo correspondiente:</p>
+                            <div class="calc-buttons">
+                                <button class="demo-button det">🔢 Calcular Determinante</button>
+                                <button class="demo-button sys">📊 Resolver Sistema</button>
+                                <button class="demo-button inv">🔄 Calcular Inversa</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Revisar Resultados</h3>
+                            <p>Analice los resultados mostrados:</p>
+                            <ul>
+                                <li><strong>Pasos detallados:</strong> Cada operación se muestra paso a paso</li>
+                                <li><strong>Animaciones:</strong> Use los controles para ver el proceso</li>
+                                <li><strong>Verificación:</strong> Los resultados incluyen comprobaciones automáticas</li>
+                                <li><strong>Formato:</strong> Todos los resultados se muestran como fracciones exactas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ejemplos" class="section">
+            <div class="container">
+                <h2 class="section-title">Ejemplos Prácticos</h2>
+                
+                <div class="examples-grid">
+                    <div class="example-card">
+                        <h3>Ejemplo 1: Determinante 2×2</h3>
+                        <div class="example-matrix">
+                            <div class="matrix-display">
+                                <div class="matrix-bracket">[</div>
+                                <div class="matrix-content">
+                                    <div class="matrix-row">
+                                        <span>3</span><span>1</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span>2</span><span>4</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-bracket">]</div>
+                            </div>
+                        </div>
+                        <div class="example-solution">
+                            <p><strong>Solución:</strong></p>
+                            <p>det(A) = (3)(4) - (1)(2) = 12 - 2 = 10</p>
+                        </div>
+                    </div>
+
+                    <div class="example-card">
+                        <h3>Ejemplo 2: Sistema 2×2</h3>
+                        <div class="example-system">
+                            <div class="system-equations">
+                                <p>3x + y = 7</p>
+                                <p>2x + 4y = 10</p>
+                            </div>
+                        </div>
+                        <div class="example-solution">
+                            <p><strong>Matriz aumentada:</strong></p>
+                            <div class="matrix-display small">
+                                <div class="matrix-bracket">[</div>
+                                <div class="matrix-content">
+                                    <div class="matrix-row">
+                                        <span>3</span><span>1</span><span class="augment">7</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span>2</span><span>4</span><span class="augment">10</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-bracket">]</div>
+                            </div>
+                            <p><strong>Solución:</strong> x = 2, y = 1</p>
+                        </div>
+                    </div>
+
+                    <div class="example-card">
+                        <h3>Ejemplo 3: Matriz Inversa 2×2</h3>
+                        <div class="example-matrix">
+                            <div class="matrix-display">
+                                <div class="matrix-bracket">[</div>
+                                <div class="matrix-content">
+                                    <div class="matrix-row">
+                                        <span>1</span><span>2</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span>3</span><span>4</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-bracket">]</div>
+                            </div>
+                        </div>
+                        <div class="example-solution">
+                            <p><strong>A⁻¹ =</strong></p>
+                            <div class="matrix-display small">
+                                <div class="matrix-bracket">[</div>
+                                <div class="matrix-content">
+                                    <div class="matrix-row">
+                                        <span>-2</span><span>1</span>
+                                    </div>
+                                    <div class="matrix-row">
+                                        <span>3/2</span><span>-1/2</span>
+                                    </div>
+                                </div>
+                                <div class="matrix-bracket">]</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="section bg-alt">
+            <div class="container">
+                <h2 class="section-title">Preguntas Frecuentes</h2>
+                
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-question-circle"></i>
+                            <span>¿Qué tipos de números puedo ingresar?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Puede ingresar números enteros, decimales y fracciones. Por ejemplo:</p>
+                            <ul>
+                                <li>Enteros: 5, -3, 0</li>
+                                <li>Decimales: 2.5, -1.75, 0.333</li>
+                                <li>Fracciones: La aplicación convierte automáticamente decimales a fracciones exactas</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-question-circle"></i>
+                            <span>¿Cuál es el tamaño máximo de matriz soportado?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Técnicamente no hay límite, pero se recomienda:</p>
+                            <ul>
+                                <li>Matrices 2×2 a 5×5 para mejor rendimiento</li>
+                                <li>Matrices más grandes pueden tardar más en calcular</li>
+                                <li>La visualización se optimiza para matrices medianas</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-question-circle"></i>
+                            <span>¿Por qué todos los resultados se muestran como fracciones?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Las fracciones proporcionan resultados exactos sin pérdida de precisión:</p>
+                            <ul>
+                                <li>Evitan errores de redondeo</li>
+                                <li>Muestran la respuesta matemática exacta</li>
+                                <li>Son más útiles para propósitos educativos</li>
+                                <li>Se simplifican automáticamente</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-question-circle"></i>
+                            <span>¿Qué significa cuando una matriz "no tiene inversa"?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Una matriz no tiene inversa cuando:</p>
+                            <ul>
+                                <li>Su determinante es igual a cero</li>
+                                <li>Se llama matriz "singular" o "no invertible"</li>
+                                <li>Las filas o columnas son linealmente dependientes</li>
+                                <li>El sistema correspondiente no tiene solución única</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <i class="fas fa-question-circle"></i>
+                            <span>¿Cómo funciona la verificación de resultados?</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>La aplicación verifica automáticamente:</p>
+                            <ul>
+                                <li><strong>Sistemas:</strong> Sustituye la solución en las ecuaciones originales</li>
+                                <li><strong>Inversas:</strong> Multiplica A × A⁻¹ y verifica que sea la matriz identidad</li>
+                                <li><strong>Determinantes:</strong> Usa diferentes métodos para validar</li>
+                                <li>Muestra cada paso de la verificación</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Calculadora de Álgebra Lineal</h4>
+                    <p>Universidad Mariano Gálvez de Guatemala</p>
+                    <p>Herramienta educativa para el aprendizaje de álgebra lineal</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul>
+                        <li><a href="manual-usuario.html">Manual de Usuario</a></li>
+                        <li><a href="documentacion-tecnica.html">Documentación Técnica</a></li>
+                        <li><a href="#ejemplos">Ejemplos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Soporte</h4>
+                    <ul>
+                        <li><a href="#faq">Preguntas Frecuentes</a></li>
+                        <li><a href="mailto:soporte@umg.edu.gt">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Universidad Mariano Gálvez de Guatemala. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/documentation.js"></script>
+</body>
+</html>
