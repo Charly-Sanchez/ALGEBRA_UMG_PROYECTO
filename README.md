@@ -322,5 +322,6 @@ La documentación incluye:
 
 ---
 
+**PROPIEDAD DE: CARLOS ARMANDO SÁNCHEZ RODRÍGUEZ**
 **Universidad Mariano Gálvez de Guatemala - Facultad de Ingeniería en Sistemas**
 *Álgebra Lineal - Ciclo II 2025*
